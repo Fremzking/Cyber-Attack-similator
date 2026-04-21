@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber_board</title>
+    <script>
+
+        /*Création de l'ordinateur*/
+        class Computer {
+            constructor(Type, option) {
+                this.Type = Type;
+                this.option = option;
+            }
+        }
+
+        class Work_Computer extends Computer {
+            constructor(Type, option) {
+                super(Type, option)
+                this.Etat = ["sain", "infecté"];
+            }
+
+            /*Methode pour changer l'état*/ 
+            alea_Etat() {
+                let i = Math.floor(Math.random()*2);
+                return this.Etat[i];
+            }
+
+            set alea_Etat(etat) {
+                this.Etat = etat;
+            }
+        }
+
+        /*Liste de phénomène aléatoire*/
+        let alea_phenomena = ["🦠 Virus", "👨‍💻 Hacker", "💥 Surcharge", "🌐 Coupure réseau", "✅ Rien"]
+
+        function gene_phenomena() {
+            let i = Math.floor(Math.random()*5);
+            return alea_phenomena[i]
+        }
+
+        let hasard = Math.random();
+
+        /*Creation d'ordinateur*/
+        let PC_1 = new Work_Computer("Desktop", "Workspace");
+        let PC_2 = new Work_Computer("Desktop", "Workspace");
+        let PC_3 = new Work_Computer("Personal", "Workspace");
+
+        let number_comput = [PC_1, PC_2, PC_3];
+
+        /*Boucle du système*/
+        setInterval(()=>{
+            let stat1 = PC_1.alea_Etat();
+            let stat2 = PC_2.alea_Etat();
+            let stat3 = PC_3.alea_Etat();
+
+            let list_stat = [stat1, stat2, stat3]
+            setTimeout(()=>{
+                console.log("LOADING.......")
+            },2000)
+            for(i of list_stat) {
+                console.log("L'état de l'ordinateur ", i+1, "est", list_stat[i]);
+            }
+
+            setTimeout(()=>{
+                console.log("LOADING......")
+            },2000)
+
+            /*Evènement aléatoire*/ 
+            setInterval(()=>{
+                let pheno = gene_phenomena()
+                if (pheno !== "✅ Rien") {
+                    console.log("Attention évènement inattendu : ", pheno);
+                    setTimeout(()=>{
+                        console.log("LOADING.......")
+                    },2000)
+                    let i = Math.floor(Math.random()*3);
+                    new Promise((resolve, reject)=> {
+                        if(hasard >0.7) {
+                            resolve(
+                                console.log("le dispositif", number_comput[i], "a été corompu"))
+                        } else {
+                            reject(
+                                console.log("Aucun dispositif n'a subi d'attaque"))
+                        }
+                    })
+
+                }
+                
+            }, 8000)
+        }, 12000)
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
