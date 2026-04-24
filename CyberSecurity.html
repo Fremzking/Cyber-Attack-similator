@@ -5,90 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cyber_board</title>
     <script>
+        /* =========================
+   💻 CLASSE ORDINATEUR
+========================= */
 
-        /*Création de l'ordinateur*/
-        class Computer {
-            constructor(Type, option) {
-                this.Type = Type;
-                this.option = option;
-            }
-        }
+class Computer {
+    constructor(type, option) {
+        this.type = type;
+        this.option = option;
+        this.state = "sain"; // état réel stocké
+    }
 
-        class Work_Computer extends Computer {
-            constructor(Type, option) {
-                super(Type, option)
-                this.Etat = ["sain", "infecté"];
-            }
+    infect() {
+        this.state = "infecté";
+    }
 
-            /*Methode pour changer l'état*/ 
-            alea_Etat() {
-                let i = Math.floor(Math.random()*2);
-                return this.Etat[i];
-            }
+    heal() {
+        this.state = "sain";
+    }
+}
 
-            set alea_Etat(etat) {
-                this.Etat = etat;
-            }
-        }
+/* =========================
+   🎲 PHÉNOMÈNES
+========================= */
 
-        /*Liste de phénomène aléatoire*/
-        let alea_phenomena = ["🦠 Virus", "👨‍💻 Hacker", "💥 Surcharge", "🌐 Coupure réseau", "✅ Rien"]
+const phenomena = ["🦠 Virus", "👨‍💻 Hacker", "💥 Surcharge", "🌐 Coupure réseau", "✅ Rien"];
 
-        function gene_phenomena() {
-            let i = Math.floor(Math.random()*5);
-            return alea_phenomena[i]
-        }
+function generatePhenomenon() {
+    let i = Math.floor(Math.random() * phenomena.length);
+    return phenomena[i];
+}
 
+/* =========================
+   🖥️ CRÉATION DES PC
+========================= */
+
+const PC1 = new Computer("Desktop", "Workspace");
+const PC2 = new Computer("Desktop", "Workspace");
+const PC3 = new Computer("Personal", "Workspace");
+
+const computers = [PC1, PC2, PC3];
+
+/* =========================
+   🚨 GESTION DES ATTAQUES
+========================= */
+
+function simulateAttack() {
+    return new Promise((resolve, reject) => {
         let hasard = Math.random();
 
-        /*Creation d'ordinateur*/
-        let PC_1 = new Work_Computer("Desktop", "Workspace");
-        let PC_2 = new Work_Computer("Desktop", "Workspace");
-        let PC_3 = new Work_Computer("Personal", "Workspace");
-
-        let number_comput = [PC_1, PC_2, PC_3];
-
-        /*Boucle du système*/
-        setInterval(()=>{
-            let stat1 = PC_1.alea_Etat();
-            let stat2 = PC_2.alea_Etat();
-            let stat3 = PC_3.alea_Etat();
-
-            let list_stat = [stat1, stat2, stat3]
-            setTimeout(()=>{
-                console.log("LOADING.......")
-            },2000)
-            for(i of list_stat) {
-                console.log("L'état de l'ordinateur ", i+1, "est", list_stat[i]);
+        setTimeout(() => {
+            if (hasard > 0.7) {
+                resolve("attaque réussie");
+            } else {
+                reject("attaque échouée");
             }
+        }, 1000);
+    });
+}
 
-            setTimeout(()=>{
-                console.log("LOADING......")
-            },2000)
+/* =========================
+   🔁 SIMULATION PRINCIPALE
+========================= */
 
-            /*Evènement aléatoire*/ 
-            setInterval(()=>{
-                let pheno = gene_phenomena()
-                if (pheno !== "✅ Rien") {
-                    console.log("Attention évènement inattendu : ", pheno);
-                    setTimeout(()=>{
-                        console.log("LOADING.......")
-                    },2000)
-                    let i = Math.floor(Math.random()*3);
-                    new Promise((resolve, reject)=> {
-                        if(hasard >0.7) {
-                            resolve(
-                                console.log("le dispositif", number_comput[i], "a été corompu"))
-                        } else {
-                            reject(
-                                console.log("Aucun dispositif n'a subi d'attaque"))
-                        }
-                    })
+async function simulation() {
 
+    console.log("=================================");
+    console.log("🖧 État du réseau :");
+
+    /* 1. AFFICHAGE ÉTAT */
+    computers.forEach((pc, index) => {
+        console.log(`PC${index + 1} : ${pc.state}`);
+    });
+
+    /* 2. PHÉNOMÈNE */
+    const pheno = generatePhenomenon();
+    console.log("📡 Événement :", pheno);
+
+    if (pheno === "✅ Rien") {
+        console.log("✔ Aucun problème détecté");
+        return;
+    }
+
+    /* 3. ATTAQUE */
+    try {
+        await simulateAttack();
+
+        let index = Math.floor(Math.random() * computers.length);
+        let target = computers[index];
+
+        console.log(`🚨 ${pheno} sur PC${index + 1}`);
+
+        target.infect();
+
+    } catch {
+        console.log("🛡️ Attaque bloquée par le système");
+    }
+
+    /* 4. PROPAGATION */
+    computers.forEach((pc, index) => {
+        if (pc.state === "infecté") {
+            let hasard = Math.random();
+
+            if (hasard > 0.6) {
+                let cibleIndex = Math.floor(Math.random() * computers.length);
+                let cible = computers[cibleIndex];
+
+                if (cible.state === "sain") {
+                    cible.infect();
+                    console.log(`💥 Propagation : PC${index + 1} → PC${cibleIndex + 1}`);
                 }
-                
-            }, 8000)
-        }, 12000)
+            }
+        }
+    });
+
+    /* 5. DÉFENSE (NETTOYAGE) */
+    computers.forEach((pc, index) => {
+        let hasard = Math.random();
+
+        if (pc.state === "infecté" && hasard > 0.7) {
+            pc.heal();
+            console.log(`🛠️ PC${index + 1} réparé`);
+        }
+    });
+}
+
+/* =========================
+   ⏱️ LANCEMENT
+========================= */
+
+setInterval(simulation, 5000);
+
+/* lancement immédiat */
+simulation();
     </script>
 </head>
 <body>
